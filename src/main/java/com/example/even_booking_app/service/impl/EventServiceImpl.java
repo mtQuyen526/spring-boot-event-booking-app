@@ -1,38 +1,59 @@
 package com.example.even_booking_app.service.impl;
 
 import com.example.even_booking_app.dto.request.EventRequest;
+import com.example.even_booking_app.dto.response.EventResponse;
 import com.example.even_booking_app.entity.Event;
 import com.example.even_booking_app.repository.EventRepository;
 import com.example.even_booking_app.service.EventService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
 
-    public EventServiceImpl(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
 
     // Create event
-    @Transactional
     @Override
-    public Event createEvent(EventRequest request) {
+    public EventResponse createEvent(EventRequest request) {
+
         Event event = new Event();
 
 
         event.setTitle(request.getTitle());
-        event.setDateTime(request.getDateTime());
+        // xử lý chuỗi String trong request.getDateTime() thành LocalDateTime
+        LocalDateTime dateTime = LocalDateTime.parse(
+                request.getDateTime(),
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss")
+                        .withResolverStyle(ResolverStyle.STRICT)
+        );
+        event.setDateTime(dateTime);
         event.setLocation(request.getLocation());
         event.setPrice(request.getPrice());
         event.setDescription(request.getDescription());
         event.setImageUrl(request.getImageUrl());
+        event.setLatitude(new BigDecimal("00.00000000"));
+        event.setLongitude(new BigDecimal("00.00000000"));
 
-        return eventRepository.save(event);
+        eventRepository.save(event);
+        return new EventResponse(
+                event.getId(),
+                event.getTitle(),
+                event.getDateTime(),
+                event.getLocation(),
+                event.getPrice(),
+                event.getDescription(),
+                event.getImageUrl()
+        );
     }
 
     // Get all events
@@ -58,7 +79,13 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(id);
 
         event.setTitle(request.getTitle());
-        event.setDateTime(request.getDateTime());
+        // xử lý chuỗi String trong request.getDateTime() thành LocalDateTime
+        LocalDateTime dateTime = LocalDateTime.parse(
+                request.getDateTime(),
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss")
+                        .withResolverStyle(ResolverStyle.STRICT)
+        );
+        event.setDateTime(dateTime);
         event.setLocation(request.getLocation());
         event.setPrice(request.getPrice());
         event.setDescription(request.getDescription());

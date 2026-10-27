@@ -1,9 +1,12 @@
 package com.example.even_booking_app.controller;
 
 import com.example.even_booking_app.dto.request.EventRequest;
+import com.example.even_booking_app.dto.response.ApiResponse;
+import com.example.even_booking_app.dto.response.EventResponse;
 import com.example.even_booking_app.entity.Event;
 import com.example.even_booking_app.service.EventService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,21 +14,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/events")
 public class EventController {
 
     private final EventService eventService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<EventResponse> createEvent(
             @Valid @RequestBody EventRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(eventService.createEvent(request));
+        EventResponse eventResponse = eventService.createEvent(request);
+        return new ApiResponse<>(
+                true,
+                "Create event successful",
+                eventResponse
+        );
     }
 
     @GetMapping

@@ -1,5 +1,7 @@
 package com.example.even_booking_app.dto.request;
 
+import com.example.even_booking_app.validation.ValidDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
@@ -19,8 +21,8 @@ public class EventRequest {
     private String title;
 
     @NotNull(message = "Date & Time is required")
-    @Future(message = "Date & Time must be in the future")
-    private LocalDateTime dateTime;
+    @ValidDateTime
+    private String dateTime;
 
     @NotBlank(message = "Location is required")
     private String location;
