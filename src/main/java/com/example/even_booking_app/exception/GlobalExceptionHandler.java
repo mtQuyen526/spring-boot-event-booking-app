@@ -2,20 +2,16 @@ package com.example.even_booking_app.exception;
 
 import com.example.even_booking_app.dto.response.ApiError;
 import com.example.even_booking_app.dto.response.ValidationError;
-import com.example.even_booking_app.dto.response.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestControllerAdvice
@@ -73,8 +69,26 @@ public class GlobalExceptionHandler { // nơi xử lý lỗi
         return ResponseEntity.status(status).body(response);
     }
 
+    // xử lý các validation
+    @ExceptionHandler(RequestValidationException.class)
+    public ResponseEntity<ApiError> handleRequestValidationException(
+            RequestValidationException ex,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
 
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                request.getRequestURI(),
+                false,
+                ex.getMessage(),
+                ex.getErrors()
+        );
 
+        return ResponseEntity.status(status).body(apiError);
+    }
 
 
 

@@ -30,8 +30,27 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login"
                         ).permitAll()
+
+                        //  POST event
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/api/events"
+                        ).permitAll()
+                        //  PUT event
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/events/{id}"
+                        ).permitAll()
+                        //  DELETE event
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/events/{id}"
+                        ).permitAll()
+
+                        // GET event
+
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/events"
                         ).permitAll()
                         .anyRequest().authenticated()
